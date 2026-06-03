@@ -14,6 +14,26 @@ from tqdm import tqdm
 
 from steganogan.utils import bits_to_bytearray, bytearray_to_text, ssim, text_to_bits
 
+# ── Compatibility patch ──────────────────────────────────────────────────────
+# PyTorch modern tidak bisa deserialize Adam checkpoint dari versi lama karena
+# struktur 'defaults' berubah. Patch ini memperbaiki __setstate__ secara runtime.
+import torch.optim as _optim
+
+_orig_optimizer_setstate = _optim.Optimizer.__setstate__
+
+def _safe_optimizer_setstate(self, state):
+    if isinstance(state, dict) and 'defaults' not in state:
+        state['defaults'] = {}
+    try:
+        _orig_optimizer_setstate(self, state)
+    except Exception:
+        pass
+
+_optim.Optimizer.__setstate__ = _safe_optimizer_setstate
+_optim.Adam.__setstate__ = _safe_optimizer_setstate
+# ─────────────────────────────────────────────────────────────────────────────
+
+
 DEFAULT_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     'train')
@@ -361,7 +381,7 @@ class SteganoGAN(object):
             raise ValueError(
                 'Please provide either an architecture or a path to pretrained model.')
 
-        steganogan = torch.load(path, map_location='cpu')
+        steganogan = torch.load(path, map_location='cpu', weights_only=False)
         steganogan.verbose = verbose
 
         steganogan.encoder.upgrade_legacy()

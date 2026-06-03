@@ -12,19 +12,17 @@ with open('HISTORY.md') as history_file:
     history = history_file.read()
 
 install_requires = [
-    'imageio>=2.4.1,<2.5.0',
-    'reedsolo==0.3',
-    'scipy>=1.1.0,<1.2.0',
-    'tqdm>=4.28.1',
-    'numpy>=1.15.4<1.16.0',
-    'Pillow>=5.0.0,<8.0.0',
-    'torch>=1.0.0,<2.0.0',
+    'imageio',
+    'reedsolo',
+    'scipy',
+    'tqdm',
+    'numpy',
+    'Pillow',
+    'torch',
     'torchvision',
 ]
 
-setup_requires = [
-    'pytest-runner>=2.11.1',
-]
+setup_requires = []
 
 tests_require = [
     'pytest>=3.4.2',
@@ -85,7 +83,6 @@ setup(
         'test': tests_require,
         'dev': development_requires + tests_require,
     },
-    install_package_data=True,
     install_requires=install_requires,
     license="MIT license",
     long_description=readme + '\n\n' + history,
@@ -96,8 +93,6 @@ setup(
     packages=find_packages(include=['steganogan', 'steganogan.*']),
     python_requires='>=3.5',
     setup_requires=setup_requires,
-    test_suite='tests',
-    tests_require=tests_require,
     url='https://github.com/DAI-Lab/SteganoGAN',
     version='0.1.4-dev',
     zip_safe=False,

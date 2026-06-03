@@ -53,7 +53,13 @@ def text_to_bytearray(text):
 def bytearray_to_text(x):
     """Apply error correction and decompress"""
     try:
-        text = rs.decode(x)
+        result = rs.decode(x)
+        # reedsolo >= 1.0 returns namedtuple(decoded, msgecc, errata_pos)
+        # reedsolo  < 1.0 returns bytes directly
+        if isinstance(result, tuple):
+            text = bytes(result[0])
+        else:
+            text = bytes(result)
         text = zlib.decompress(text)
         return text.decode("utf-8")
     except BaseException:

@@ -10,6 +10,45 @@
 
 # SteganoGAN
 
+## ⚠️ Compatibility Note (Python 3.10+)
+
+The original DAI-Lab repository targets Python 3.5–3.7 and PyTorch 1.0.0.
+This fork includes the following patches to run on modern environments:
+
+| Fix | Problem | Solution |
+|-----|---------|----------|
+| `setup.py` | Invalid version specifiers (missing comma) | Removed strict version locks |
+| `utils.py` | `reedsolo >= 1.0` returns tuple instead of bytes | Handle both return types |
+| `models.py` | `Adam` optimizer deserialization fails on PyTorch 2.x | Monkey-patch `__setstate__` |
+| `models.py` | `torch.load` requires `weights_only` param on PyTorch 2.x | Added `weights_only=False` |
+
+### Installation (Modern Python)
+
+```bash
+git clone <this-repo>
+cd SteganoGAN
+python3 -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -e .
+```
+
+### Quick Decode
+
+```python
+import torch
+import torch.optim
+from steganogan import SteganoGAN
+
+model = SteganoGAN.load(architecture='dense')  # or 'basic' / 'residual'
+print(model.decode('path/to/image.png'))
+```
+
+> **Note:** The Adam optimizer patch is now embedded directly in `models.py`,
+> so no manual patching is needed before import.
+
+---
+
+
 - License: MIT
 - Documentation: https://DAI-Lab.github.io/SteganoGAN
 - Homepage: https://github.com/DAI-Lab/SteganoGAN
